@@ -1,5 +1,6 @@
 package invaders.gameobject;
 
+import invaders.Points;
 import invaders.engine.GameEngine;
 import invaders.factory.EnemyProjectileFactory;
 import invaders.factory.Projectile;
@@ -7,14 +8,19 @@ import invaders.factory.ProjectileFactory;
 import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
+import invaders.status.Observer;
+import invaders.status.Subject;
+import invaders.strategy.FastProjectileStrategy;
 import invaders.strategy.ProjectileStrategy;
+import invaders.strategy.SlowProjectileStrategy;
 import javafx.scene.image.Image;
+import java.util.List;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Enemy implements GameObject, Renderable {
+public class Enemy implements GameObject, Renderable, Subject {
     private Vector2D position;
     private int lives = 1;
     private Image image;
@@ -26,12 +32,14 @@ public class Enemy implements GameObject, Renderable {
     private ProjectileFactory projectileFactory;
     private Image projectileImage;
     private Random random = new Random();
+    private ArrayList<Observer> observers;
 
     public Enemy(Vector2D position) {
         this.position = position;
         this.projectileFactory = new EnemyProjectileFactory();
         this.enemyProjectile = new ArrayList<>();
         this.pendingToDeleteEnemyProjectile = new ArrayList<>();
+        this.observers = new ArrayList<>();
     }
 
     @Override
@@ -121,6 +129,7 @@ public class Enemy implements GameObject, Renderable {
 
     @Override
     public void takeDamage(double amount) {
+        notifyObservers();
         this.lives-=1;
     }
 
@@ -143,4 +152,22 @@ public class Enemy implements GameObject, Renderable {
         this.projectileStrategy = projectileStrategy;
     }
 
+    @Override
+    public void attachObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for(Observer observer:observers) {
+            if (projectileStrategy instanceof FastProjectileStrategy){
+                observer.notify(Points.FAST_ALIEN.getPoints());
+            } else if (projectileStrategy instanceof SlowProjectileStrategy){
+                observer.notify(Points.SLOW_PROJECTILE.getPoints());
+            } else{
+                // default will be slow
+                observer.notify(Points.DEFAULT.getPoints());
+            }
+        }
+    }
 }

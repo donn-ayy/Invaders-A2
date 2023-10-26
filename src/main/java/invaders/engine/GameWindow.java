@@ -3,10 +3,15 @@ package invaders.engine;
 import java.util.List;
 import java.util.ArrayList;
 
-import invaders.ConfigReader;
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
-import javafx.scene.control.Alert;
+import invaders.status.ScoreManager;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import invaders.entities.EntityView;
@@ -15,12 +20,13 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import org.json.simple.JSONObject;
 
 public class GameWindow {
 	private final int width;
     private final int height;
 	private Scene scene;
+    private Scene timeScoreScene;
+    private Pane timeScorePane;
     private Pane pane;
     private GameEngine model;
     private List<EntityView> entityViews =  new ArrayList<EntityView>();
@@ -28,27 +34,59 @@ public class GameWindow {
 
     private double xViewportOffset = 0.0;
     private double yViewportOffset = 0.0;
+    private Label timerLabel;
+    private Label playerLabel;
+    private ScoreManager scoreManager;
+    private int elapsedTimeInSeconds;
+
+
     // private static final double VIEWPORT_MARGIN = 280.0;
 
 	public GameWindow(GameEngine model){
         this.model = model;
-		this.width =  model.getGameWidth();
+        this.width =  model.getGameWidth();
         this.height = model.getGameHeight();
+        scoreManager = model.getScoreManager();
+        elapsedTimeInSeconds = 0;
 
         pane = new Pane();
-        scene = new Scene(pane, width, height);
+        pane.setStyle("-fx-background-color: transparent");
+        pane.setPrefSize(width, height);
+        pane.setPrefHeight(height);
+
         this.background = new SpaceBackground(model, pane);
+
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: black");
+        vbox.getChildren().add(pane);
+
+        HBox bottomBox = new HBox();
+        bottomBox.setPrefHeight(100);
+        vbox.getChildren().add(bottomBox);
+
+        scene = new Scene(vbox, width, height + 100);
 
         KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model);
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
 
+        timerLabel = new Label("TIME: 00:00");
+        timerLabel.setFont(new Font("Arial", 20));
+        timerLabel.setTextFill(Color.LIMEGREEN);
+        startTimer();
+        bottomBox.getChildren().add(timerLabel);
+
+        playerLabel = new Label("PLAYER SCORE: 0");
+        playerLabel.setFont(new Font("Arial", 20));
+        playerLabel.setTextFill(Color.LIMEGREEN);
+        playerLabel.setAlignment(Pos.BASELINE_RIGHT);
+        bottomBox.getChildren().add(playerLabel);
+
     }
 
 	public void run() {
          Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> this.draw()));
-
          timeline.setCycleCount(Timeline.INDEFINITE);
          timeline.play();
     }
@@ -56,6 +94,8 @@ public class GameWindow {
 
     private void draw(){
         model.update();
+
+        updatePlayerScore();
 
         List<Renderable> renderables = model.getRenderables();
         for (Renderable entity : renderables) {
@@ -107,5 +147,22 @@ public class GameWindow {
 
 	public Scene getScene() {
         return scene;
+    }
+
+    private void startTimer() {
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event -> {
+                    elapsedTimeInSeconds++;
+                    int minutes = elapsedTimeInSeconds / 60;
+                    int seconds = elapsedTimeInSeconds % 60;
+                    timerLabel.setText(String.format("TIME: %02d:%02d", minutes, seconds));
+                })
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    private void updatePlayerScore(){
+        playerLabel.setText(String.format("PLAYER SCORE: %d", scoreManager.getPlayerScore()));
     }
 }

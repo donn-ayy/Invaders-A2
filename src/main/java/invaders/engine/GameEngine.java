@@ -13,6 +13,8 @@ import invaders.gameobject.Enemy;
 import invaders.gameobject.GameObject;
 import invaders.entities.Player;
 import invaders.rendering.Renderable;
+import invaders.status.ScoreManager;
+import invaders.status.Subject;
 import org.json.simple.JSONObject;
 
 /**
@@ -34,6 +36,8 @@ public class GameEngine {
 	private boolean right;
 	private int gameWidth;
 	private int gameHeight;
+	private ScoreManager scoreManager;
+	private int playerScore;
 	private int timer = 45;
 
 	public GameEngine(String config){
@@ -47,6 +51,9 @@ public class GameEngine {
 		//Get player info
 		this.player = new Player(ConfigReader.getPlayerInfo());
 		renderables.add(player);
+
+		// Setup score manager
+		scoreManager = new ScoreManager();
 
 
 		Director director = new Director();
@@ -67,6 +74,8 @@ public class GameEngine {
 			renderables.add(enemy);
 		}
 
+		// Run attach observer utility
+		observerUtility();
 	}
 
 	/**
@@ -195,4 +204,17 @@ public class GameEngine {
 	public Player getPlayer() {
 		return player;
 	}
+
+	private void observerUtility(){
+		for(Renderable rend:renderables){
+			if(rend instanceof Subject){
+				((Subject) rend).attachObserver(scoreManager);
+			}
+		}
+	}
+
+	public ScoreManager getScoreManager(){
+		return scoreManager;
+	}
+
 }
