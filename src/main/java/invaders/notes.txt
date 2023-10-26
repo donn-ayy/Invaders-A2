@@ -1,0 +1,6 @@
+Cannot use:
+Factory
+Strategy
+Pattern
+State
+
