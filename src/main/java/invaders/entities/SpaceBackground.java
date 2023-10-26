@@ -15,6 +15,7 @@ public class SpaceBackground implements Renderable {
     private GameEngine model;
 
 	public SpaceBackground(GameEngine engine, Pane pane){
+		this.model = engine;
 		pane.setStyle("-fx-background-color: black");
 		space = new Rectangle();
 		space.widthProperty().bind(pane.widthProperty());

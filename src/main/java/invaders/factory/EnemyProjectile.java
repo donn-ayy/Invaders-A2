@@ -30,8 +30,6 @@ public class EnemyProjectile extends Projectile implements Subject {
         strategy.update(this);
 
         if(this.getPosition().getY()>= model.getGameHeight() - this.getImage().getHeight()){
-            // when projectile gets hit - notify observer
-            notifyObservers();
             this.takeDamage(1);
         }
     }

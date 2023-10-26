@@ -7,6 +7,7 @@ import invaders.ConfigReader;
 import invaders.builder.BunkerBuilder;
 import invaders.builder.Director;
 import invaders.builder.EnemyBuilder;
+import invaders.factory.EnemyProjectile;
 import invaders.factory.Projectile;
 import invaders.gameobject.Bunker;
 import invaders.gameobject.Enemy;
@@ -37,7 +38,6 @@ public class GameEngine {
 	private int gameWidth;
 	private int gameHeight;
 	private ScoreManager scoreManager;
-	private int playerScore;
 	private int timer = 45;
 
 	public GameEngine(String config){
@@ -130,7 +130,6 @@ public class GameEngine {
 				ro.getPosition().setY(offset);
 			}
 		}
-
 	}
 
 	public List<Renderable> getRenderables(){

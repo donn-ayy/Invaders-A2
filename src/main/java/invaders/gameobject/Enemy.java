@@ -2,6 +2,7 @@ package invaders.gameobject;
 
 import invaders.Points;
 import invaders.engine.GameEngine;
+import invaders.factory.EnemyProjectile;
 import invaders.factory.EnemyProjectileFactory;
 import invaders.factory.Projectile;
 import invaders.factory.ProjectileFactory;
@@ -51,6 +52,7 @@ public class Enemy implements GameObject, Renderable, Subject {
             if(this.isAlive() &&  random.nextInt(120)==20){
                 Projectile p = projectileFactory.createProjectile(new Vector2D(position.getX() + this.image.getWidth() / 2, position.getY() + image.getHeight() + 2),projectileStrategy, projectileImage);
                 enemyProjectile.add(p);
+                ((EnemyProjectile) p ).attachObserver(engine.getScoreManager());
                 engine.getPendingToAddGameObject().add(p);
                 engine.getPendingToAddRenderable().add(p);
             }

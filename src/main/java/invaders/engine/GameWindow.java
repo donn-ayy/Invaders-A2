@@ -5,10 +5,14 @@ import java.util.ArrayList;
 
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
+import invaders.factory.EnemyProjectile;
 import invaders.status.ScoreManager;
+import invaders.status.Subject;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -38,6 +42,7 @@ public class GameWindow {
     private Label playerLabel;
     private ScoreManager scoreManager;
     private int elapsedTimeInSeconds;
+    private int bottomBoxSize;
 
 
     // private static final double VIEWPORT_MARGIN = 280.0;
@@ -47,7 +52,9 @@ public class GameWindow {
         this.width =  model.getGameWidth();
         this.height = model.getGameHeight();
         scoreManager = model.getScoreManager();
+
         elapsedTimeInSeconds = 0;
+        bottomBoxSize = 50;
 
         pane = new Pane();
         pane.setStyle("-fx-background-color: transparent");
@@ -61,10 +68,10 @@ public class GameWindow {
         vbox.getChildren().add(pane);
 
         HBox bottomBox = new HBox();
-        bottomBox.setPrefHeight(100);
+        bottomBox.setPrefHeight(bottomBoxSize);
         vbox.getChildren().add(bottomBox);
 
-        scene = new Scene(vbox, width, height + 100);
+        scene = new Scene(vbox, width, height + bottomBoxSize);
 
         KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model);
 
@@ -74,15 +81,20 @@ public class GameWindow {
         timerLabel = new Label("TIME: 00:00");
         timerLabel.setFont(new Font("Arial", 20));
         timerLabel.setTextFill(Color.LIMEGREEN);
-        startTimer();
         bottomBox.getChildren().add(timerLabel);
 
         playerLabel = new Label("PLAYER SCORE: 0");
         playerLabel.setFont(new Font("Arial", 20));
         playerLabel.setTextFill(Color.LIMEGREEN);
-        playerLabel.setAlignment(Pos.BASELINE_RIGHT);
+
+        Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        bottomBox.getChildren().add(spacer);
         bottomBox.getChildren().add(playerLabel);
 
+        bottomBox.setSpacing(10);
+        bottomBox.setPadding(new Insets(10));
+        startTimer();
     }
 
 	public void run() {
@@ -142,7 +154,6 @@ public class GameWindow {
         model.getPendingToRemoveRenderable().clear();
 
         entityViews.removeIf(EntityView::isMarkedForDelete);
-
     }
 
 	public Scene getScene() {
@@ -163,6 +174,7 @@ public class GameWindow {
     }
 
     private void updatePlayerScore(){
-        playerLabel.setText(String.format("PLAYER SCORE: %d", scoreManager.getPlayerScore()));
+        int playerScore = scoreManager.getPlayerScore();
+        playerLabel.setText(String.format("PLAYER SCORE: %d", playerScore));
     }
 }
