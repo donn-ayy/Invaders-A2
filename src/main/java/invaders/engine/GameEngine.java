@@ -8,13 +8,14 @@ import invaders.builder.BunkerBuilder;
 import invaders.builder.Director;
 import invaders.builder.EnemyBuilder;
 import invaders.factory.EnemyProjectile;
+import invaders.factory.PlayerProjectile;
 import invaders.factory.Projectile;
 import invaders.gameobject.Bunker;
 import invaders.gameobject.Enemy;
 import invaders.gameobject.GameObject;
 import invaders.entities.Player;
 import invaders.rendering.Renderable;
-import invaders.status.ScoreManager;
+import invaders.status.ScoreObserver;
 import invaders.status.Subject;
 import org.json.simple.JSONObject;
 
@@ -37,10 +38,12 @@ public class GameEngine {
 	private boolean right;
 	private int gameWidth;
 	private int gameHeight;
-	private ScoreManager scoreManager;
+	private ScoreObserver scoreObserver;
 	private int timer = 45;
 
-	public GameEngine(String config){
+	public GameEngine(String config, ScoreObserver observer){
+		this.scoreObserver = observer;
+
 		// Read the config here
 		ConfigReader.parse(config);
 
@@ -52,8 +55,6 @@ public class GameEngine {
 		this.player = new Player(ConfigReader.getPlayerInfo());
 		renderables.add(player);
 
-		// Setup score manager
-		scoreManager = new ScoreManager();
 
 
 		Director director = new Director();
@@ -70,12 +71,10 @@ public class GameEngine {
 		//Get Enemy info
 		for(Object eachEnemyInfo:ConfigReader.getEnemiesInfo()){
 			Enemy enemy = director.constructEnemy(this,enemyBuilder,(JSONObject)eachEnemyInfo);
+			enemy.attachObserver(scoreObserver);
 			gameObjects.add(enemy);
 			renderables.add(enemy);
 		}
-
-		// Run attach observer utility
-		observerUtility();
 	}
 
 	/**
@@ -98,8 +97,15 @@ public class GameEngine {
 				if((renderableA.getRenderableObjectName().equals("Enemy") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))
 						||(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("Enemy"))||
 						(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))){
-				}else{
+				}
+				else{
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
+						if(renderableA instanceof PlayerProjectile && renderableB instanceof EnemyProjectile){
+							((EnemyProjectile)renderableB).notifyObservers();
+						}
+						if(renderableB instanceof PlayerProjectile && renderableA instanceof EnemyProjectile){
+							((EnemyProjectile)renderableA).notifyObservers();
+						}
 						renderableA.takeDamage(1);
 						renderableB.takeDamage(1);
 					}
@@ -203,17 +209,8 @@ public class GameEngine {
 	public Player getPlayer() {
 		return player;
 	}
-
-	private void observerUtility(){
-		for(Renderable rend:renderables){
-			if(rend instanceof Subject){
-				((Subject) rend).attachObserver(scoreManager);
-			}
-		}
-	}
-
-	public ScoreManager getScoreManager(){
-		return scoreManager;
+	public void toBeAttached(Subject subject){
+		subject.attachObserver(scoreObserver);
 	}
 
 }

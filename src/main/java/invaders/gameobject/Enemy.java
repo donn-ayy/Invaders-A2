@@ -15,6 +15,8 @@ import invaders.strategy.FastProjectileStrategy;
 import invaders.strategy.ProjectileStrategy;
 import invaders.strategy.SlowProjectileStrategy;
 import javafx.scene.image.Image;
+
+import java.lang.reflect.Array;
 import java.util.List;
 
 import java.io.File;
@@ -34,6 +36,7 @@ public class Enemy implements GameObject, Renderable, Subject {
     private Image projectileImage;
     private Random random = new Random();
     private ArrayList<Observer> observers;
+    private ArrayList<Projectile> temp = new ArrayList<>();
 
     public Enemy(Vector2D position) {
         this.position = position;
@@ -52,7 +55,7 @@ public class Enemy implements GameObject, Renderable, Subject {
             if(this.isAlive() &&  random.nextInt(120)==20){
                 Projectile p = projectileFactory.createProjectile(new Vector2D(position.getX() + this.image.getWidth() / 2, position.getY() + image.getHeight() + 2),projectileStrategy, projectileImage);
                 enemyProjectile.add(p);
-                ((EnemyProjectile) p ).attachObserver(engine.getScoreManager());
+                engine.toBeAttached((Subject) p);
                 engine.getPendingToAddGameObject().add(p);
                 engine.getPendingToAddRenderable().add(p);
             }
@@ -82,9 +85,6 @@ public class Enemy implements GameObject, Renderable, Subject {
             engine.getPlayer().takeDamage(Integer.MAX_VALUE);
         }
 
-        /*
-        Logic TBD
-         */
 
     }
 
@@ -162,12 +162,11 @@ public class Enemy implements GameObject, Renderable, Subject {
     @Override
     public void notifyObservers() {
         for(Observer observer:observers) {
-            if (projectileStrategy instanceof FastProjectileStrategy){
+            if (projectileStrategy.getProjectileStrategyName().equals("FastProjectileStrategy")){
                 observer.notify(Points.FAST_ALIEN.getPoints());
-            } else if (projectileStrategy instanceof SlowProjectileStrategy){
-                observer.notify(Points.SLOW_PROJECTILE.getPoints());
+            } else if (projectileStrategy.getProjectileStrategyName().equals("SlowProjectileStrategy")){
+                observer.notify(Points.SLOW_ALIEN.getPoints());
             } else{
-                // default will be slow
                 observer.notify(Points.DEFAULT.getPoints());
             }
         }

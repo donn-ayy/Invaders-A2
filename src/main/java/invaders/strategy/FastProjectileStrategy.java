@@ -9,4 +9,9 @@ public class FastProjectileStrategy implements ProjectileStrategy{
         double newYPos = p.getPosition().getY() + 3;
         p.getPosition().setY(newYPos);
     }
+
+    @Override
+    public String getProjectileStrategyName() {
+        return "FastProjectileStrategy";
+    }
 }

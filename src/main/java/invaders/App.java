@@ -4,6 +4,7 @@ import invaders.levels.EasyLevel;
 import invaders.levels.GameLevel;
 import invaders.levels.HardLevel;
 import invaders.levels.MediumLevel;
+import invaders.status.ScoreObserver;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -93,8 +94,10 @@ public class App extends Application {
         }
         stage.close();
 
-        GameEngine model = new GameEngine(configLevel.getConfig());
+        ScoreObserver scoreObserver = new ScoreObserver();
+        GameEngine model = new GameEngine(configLevel.getConfig(), scoreObserver);
         GameWindow window = new GameWindow(model);
+        scoreObserver.setupGame(window);
         window.run();
 
         Stage gameStage = new Stage();

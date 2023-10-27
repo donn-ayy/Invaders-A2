@@ -30,6 +30,7 @@ public class EnemyProjectile extends Projectile implements Subject {
         strategy.update(this);
 
         if(this.getPosition().getY()>= model.getGameHeight() - this.getImage().getHeight()){
+            // flying off the screen
             this.takeDamage(1);
         }
     }
@@ -46,10 +47,10 @@ public class EnemyProjectile extends Projectile implements Subject {
     @Override
     public void notifyObservers() {
         for(Observer observer:observers){
-            if(strategy instanceof FastProjectileStrategy){
-                observer.notify(Points.FAST_ALIEN.getPoints());
-            } else if (strategy instanceof SlowProjectileStrategy){
-                observer.notify(Points.SLOW_ALIEN.getPoints());
+            if(strategy.getProjectileStrategyName().equals("FastProjectileStrategy")){
+                observer.notify(Points.FAST_PROJECTILE.getPoints());
+            } else if (strategy.getProjectileStrategyName().equals("SlowProjectileStrategy")){
+                observer.notify(Points.SLOW_PROJECTILE.getPoints());
             } else{
                 observer.notify(Points.DEFAULT.getPoints());
             }

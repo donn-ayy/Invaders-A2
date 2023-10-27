@@ -5,11 +5,7 @@ import java.util.ArrayList;
 
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
-import invaders.factory.EnemyProjectile;
-import invaders.status.ScoreManager;
-import invaders.status.Subject;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -29,32 +25,29 @@ public class GameWindow {
 	private final int width;
     private final int height;
 	private Scene scene;
-    private Scene timeScoreScene;
-    private Pane timeScorePane;
     private Pane pane;
     private GameEngine model;
     private List<EntityView> entityViews =  new ArrayList<EntityView>();
     private Renderable background;
-
     private double xViewportOffset = 0.0;
     private double yViewportOffset = 0.0;
     private Label timerLabel;
     private Label playerLabel;
-    private ScoreManager scoreManager;
     private int elapsedTimeInSeconds;
     private int bottomBoxSize;
+    private int playerScore;
 
 
     // private static final double VIEWPORT_MARGIN = 280.0;
 
-	public GameWindow(GameEngine model){
+	public GameWindow(GameEngine model) {
         this.model = model;
         this.width =  model.getGameWidth();
         this.height = model.getGameHeight();
-        scoreManager = model.getScoreManager();
 
         elapsedTimeInSeconds = 0;
         bottomBoxSize = 50;
+        playerScore = 0;
 
         pane = new Pane();
         pane.setStyle("-fx-background-color: transparent");
@@ -107,7 +100,7 @@ public class GameWindow {
     private void draw(){
         model.update();
 
-        updatePlayerScore();
+        playerLabel.setText(String.format("PLAYER SCORE: %d", playerScore));
 
         List<Renderable> renderables = model.getRenderables();
         for (Renderable entity : renderables) {
@@ -173,8 +166,7 @@ public class GameWindow {
         timeline.play();
     }
 
-    private void updatePlayerScore(){
-        int playerScore = scoreManager.getPlayerScore();
-        playerLabel.setText(String.format("PLAYER SCORE: %d", playerScore));
+    public void displayPlayerScore(int playerScore){
+        this.playerScore = playerScore;
     }
 }
