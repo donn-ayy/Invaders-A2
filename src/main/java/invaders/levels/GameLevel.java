@@ -1,5 +1,7 @@
 package invaders.levels;
 
+import invaders.engine.GameEngine;
+
 public interface GameLevel {
-    String getConfig();
+    GameEngine getConfig();
 }

@@ -1,19 +1,21 @@
 package invaders.levels;
 
+import invaders.engine.GameEngine;
+
 public class EasyLevel implements GameLevel{
-    private static EasyLevel instance;
+    private static GameEngine instance;
 
     private EasyLevel(){}
 
-    public static EasyLevel getInstance(){
+    public static GameEngine getInstance(){
         if (instance == null){
-            instance = new EasyLevel();
+            instance = new GameEngine("src/main/resources/config_easy.json");
         }
         return instance;
     }
 
     @Override
-    public String getConfig() {
-        return "src/main/resources/config_easy.json";
+    public GameEngine getConfig() {
+        return instance;
     }
 }

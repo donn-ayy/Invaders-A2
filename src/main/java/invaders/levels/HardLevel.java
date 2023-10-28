@@ -1,19 +1,21 @@
 package invaders.levels;
 
+import invaders.engine.GameEngine;
+
 public class HardLevel implements GameLevel{
-    private static HardLevel instance;
+    private static GameEngine instance;
 
     private HardLevel(){}
 
-    public static HardLevel getInstance(){
+    public static GameEngine getInstance(){
         if (instance == null){
-            instance = new HardLevel();
+            instance = new GameEngine("src/main/resources/config_hard.json");
         }
         return instance;
     }
 
     @Override
-    public String getConfig() {
-        return "src/main/resources/config_hard.json";
+    public GameEngine getConfig() {
+        return instance;
     }
 }

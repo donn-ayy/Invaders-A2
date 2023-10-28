@@ -39,10 +39,11 @@ public class GameEngine {
 	private int gameWidth;
 	private int gameHeight;
 	private ScoreObserver scoreObserver;
+	private GameWindow window;
 	private int timer = 45;
 
-	public GameEngine(String config, ScoreObserver observer){
-		this.scoreObserver = observer;
+	public GameEngine(String config){
+		scoreObserver = new ScoreObserver();
 
 		// Read the config here
 		ConfigReader.parse(config);
@@ -211,6 +212,10 @@ public class GameEngine {
 	}
 	public void toBeAttached(Subject subject){
 		subject.attachObserver(scoreObserver);
+	}
+	public void setWindow(GameWindow window){
+		this.window = window;
+		scoreObserver.setupGame(window);
 	}
 
 }

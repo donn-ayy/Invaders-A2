@@ -44,6 +44,7 @@ public class GameWindow {
         this.model = model;
         this.width =  model.getGameWidth();
         this.height = model.getGameHeight();
+        model.setWindow(this);
 
         elapsedTimeInSeconds = 0;
         bottomBoxSize = 50;
@@ -169,4 +170,5 @@ public class GameWindow {
     public void displayPlayerScore(int playerScore){
         this.playerScore = playerScore;
     }
+
 }

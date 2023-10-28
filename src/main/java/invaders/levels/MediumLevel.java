@@ -1,19 +1,21 @@
 package invaders.levels;
 
+import invaders.engine.GameEngine;
+
 public class MediumLevel implements GameLevel{
-    private static MediumLevel instance;
+    private static GameEngine instance;
 
     private MediumLevel(){}
 
-    public static MediumLevel getInstance(){
+    public static GameEngine getInstance(){
         if (instance == null){
-            instance = new MediumLevel();
+            instance = new GameEngine("src/main/resources/config_medium.json");
         }
         return instance;
     }
 
     @Override
-    public String getConfig() {
-        return "src/main/resources/config_medium.json";
+    public GameEngine getConfig() {
+        return instance;
     }
 }
