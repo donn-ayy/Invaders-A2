@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
+import invaders.undo.Snapshot;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -36,7 +37,7 @@ public class GameWindow {
     private int elapsedTimeInSeconds;
     private int bottomBoxSize;
     private int playerScore;
-
+    private Snapshot state;
 
     // private static final double VIEWPORT_MARGIN = 280.0;
 
@@ -171,4 +172,7 @@ public class GameWindow {
         this.playerScore = playerScore;
     }
 
+    public Snapshot save(){
+        return new Snapshot();
+    }
 }

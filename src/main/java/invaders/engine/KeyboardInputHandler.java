@@ -15,6 +15,8 @@ class KeyboardInputHandler {
     private final GameEngine model;
     private boolean left = false;
     private boolean right = false;
+    private boolean save = false;
+    private boolean undo = false;
     private Set<KeyCode> pressedKeys = new HashSet<>();
 
     private Map<String, MediaPlayer> sounds = new HashMap<>();
@@ -52,12 +54,30 @@ class KeyboardInputHandler {
             right = true;
         }
 
+        if (keyEvent.getCode().equals(KeyCode.S)){
+            save = true;
+        }
+
+        if (keyEvent.getCode().equals(KeyCode.U)){
+            undo = true;
+        }
+
         if (left) {
             model.leftPressed();
         }
 
         if(right){
             model.rightPressed();
+        }
+
+        if(save){
+//            X.savePressed();
+            System.out.println("SAVE");
+        }
+
+        if(undo){
+//            X.undoPressed();
+            System.out.println("UNDO");
         }
     }
 
@@ -72,5 +92,14 @@ class KeyboardInputHandler {
             model.rightReleased();
             right = false;
         }
+        if (keyEvent.getCode().equals(KeyCode.S)) {
+//            model.saveReleased();
+            save = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.U)) {
+//            model.undoReleased();
+            undo = false;
+        }
+
     }
 }
