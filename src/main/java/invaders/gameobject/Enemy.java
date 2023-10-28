@@ -14,6 +14,9 @@ import invaders.status.Subject;
 import invaders.strategy.FastProjectileStrategy;
 import invaders.strategy.ProjectileStrategy;
 import invaders.strategy.SlowProjectileStrategy;
+import invaders.undo.EnemyMemento;
+import invaders.undo.Memento;
+import invaders.undo.Originator;
 import javafx.scene.image.Image;
 
 import java.lang.reflect.Array;
@@ -23,7 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Enemy implements GameObject, Renderable, Subject {
+public class Enemy implements GameObject, Renderable, Subject, Originator {
     private Vector2D position;
     private int lives = 1;
     private Image image;
@@ -36,7 +39,6 @@ public class Enemy implements GameObject, Renderable, Subject {
     private Image projectileImage;
     private Random random = new Random();
     private ArrayList<Observer> observers;
-    private ArrayList<Projectile> temp = new ArrayList<>();
 
     public Enemy(Vector2D position) {
         this.position = position;
@@ -84,7 +86,6 @@ public class Enemy implements GameObject, Renderable, Subject {
         if((this.position.getY()+this.image.getHeight())>=engine.getPlayer().getPosition().getY()){
             engine.getPlayer().takeDamage(Integer.MAX_VALUE);
         }
-
 
     }
 
@@ -171,4 +172,17 @@ public class Enemy implements GameObject, Renderable, Subject {
             }
         }
     }
-}
+
+    public void setProjectiles(ArrayList<Projectile> projectiles){
+        this.enemyProjectile = projectiles;
+    }
+
+    @Override
+    public Memento save() {
+        return new EnemyMemento(
+                this,
+                new Vector2D(position.getX(), position.getY()),
+                new ArrayList<>(enemyProjectile)
+        );
+    }
+

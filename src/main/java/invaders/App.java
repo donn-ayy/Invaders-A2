@@ -1,13 +1,7 @@
 package invaders;
 
-import invaders.levels.HardLevel;
-import invaders.levels.GameLevel;
 import invaders.levels.LevelWindow;
-import invaders.status.ScoreObserver;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import invaders.engine.GameEngine;
 import invaders.engine.GameWindow;

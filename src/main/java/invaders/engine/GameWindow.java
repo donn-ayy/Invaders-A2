@@ -5,7 +5,10 @@ import java.util.ArrayList;
 
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
-import invaders.undo.Snapshot;
+import invaders.gameobject.Enemy;
+import invaders.status.ScoreTimeKeeper;
+import invaders.undo.Memento;
+import invaders.undo.ScoreTimeMemento;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -34,10 +37,12 @@ public class GameWindow {
     private double yViewportOffset = 0.0;
     private Label timerLabel;
     private Label playerLabel;
-    private int elapsedTimeInSeconds;
+    private int minutes;
+    private int seconds;
     private int bottomBoxSize;
     private int playerScore;
-    private Snapshot state;
+    private ScoreTimeKeeper keeper;
+
 
     // private static final double VIEWPORT_MARGIN = 280.0;
 
@@ -45,9 +50,9 @@ public class GameWindow {
         this.model = model;
         this.width =  model.getGameWidth();
         this.height = model.getGameHeight();
-        model.setWindow(this);
+        this.keeper = model.getScoreKeeper();
 
-        elapsedTimeInSeconds = 0;
+
         bottomBoxSize = 50;
         playerScore = 0;
 
@@ -89,7 +94,6 @@ public class GameWindow {
 
         bottomBox.setSpacing(10);
         bottomBox.setPadding(new Insets(10));
-        startTimer();
     }
 
 	public void run() {
@@ -102,7 +106,13 @@ public class GameWindow {
     private void draw(){
         model.update();
 
+        minutes = keeper.getMinutes();
+        seconds = keeper.getSeconds();
+        playerScore = keeper.getPlayerScore();
+
         playerLabel.setText(String.format("PLAYER SCORE: %d", playerScore));
+        timerLabel.setText(String.format("TIME: %02d:%02d", minutes, seconds));
+
 
         List<Renderable> renderables = model.getRenderables();
         for (Renderable entity : renderables) {
@@ -155,24 +165,4 @@ public class GameWindow {
         return scene;
     }
 
-    private void startTimer() {
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> {
-                    elapsedTimeInSeconds++;
-                    int minutes = elapsedTimeInSeconds / 60;
-                    int seconds = elapsedTimeInSeconds % 60;
-                    timerLabel.setText(String.format("TIME: %02d:%02d", minutes, seconds));
-                })
-        );
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-    }
-
-    public void displayPlayerScore(int playerScore){
-        this.playerScore = playerScore;
-    }
-
-    public Snapshot save(){
-        return new Snapshot();
-    }
 }

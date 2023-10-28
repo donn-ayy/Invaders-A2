@@ -71,12 +71,12 @@ class KeyboardInputHandler {
         }
 
         if(save){
-//            X.savePressed();
+            model.savePressed();
             System.out.println("SAVE");
         }
 
         if(undo){
-//            X.undoPressed();
+            model.undoPressed();
             System.out.println("UNDO");
         }
     }
@@ -93,13 +93,10 @@ class KeyboardInputHandler {
             right = false;
         }
         if (keyEvent.getCode().equals(KeyCode.S)) {
-//            model.saveReleased();
             save = false;
         }
         if (keyEvent.getCode().equals(KeyCode.U)) {
-//            model.undoReleased();
             undo = false;
         }
-
     }
 }

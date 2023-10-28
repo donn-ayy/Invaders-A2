@@ -15,8 +15,10 @@ import invaders.gameobject.Enemy;
 import invaders.gameobject.GameObject;
 import invaders.entities.Player;
 import invaders.rendering.Renderable;
-import invaders.status.ScoreObserver;
+import invaders.status.ScoreTimeKeeper;
 import invaders.status.Subject;
+import invaders.undo.Memento;
+import invaders.undo.ScoreTimeMemento;
 import org.json.simple.JSONObject;
 
 /**
@@ -31,6 +33,7 @@ public class GameEngine {
 	private List<Renderable> pendingToRemoveRenderable = new ArrayList<>();
 
 	private List<Renderable> renderables =  new ArrayList<>();
+	private List<Enemy> enemies;
 
 	private Player player;
 
@@ -38,12 +41,15 @@ public class GameEngine {
 	private boolean right;
 	private int gameWidth;
 	private int gameHeight;
-	private ScoreObserver scoreObserver;
-	private GameWindow window;
+	private ScoreTimeKeeper scoreTimeKeeper;
+	private Memento scoreTimeState;
+	private List<Memento> enemyState;
+
 	private int timer = 45;
 
 	public GameEngine(String config){
-		scoreObserver = new ScoreObserver();
+		scoreTimeKeeper = new ScoreTimeKeeper();
+		enemies = new ArrayList<>();
 
 		// Read the config here
 		ConfigReader.parse(config);
@@ -72,9 +78,10 @@ public class GameEngine {
 		//Get Enemy info
 		for(Object eachEnemyInfo:ConfigReader.getEnemiesInfo()){
 			Enemy enemy = director.constructEnemy(this,enemyBuilder,(JSONObject)eachEnemyInfo);
-			enemy.attachObserver(scoreObserver);
+			enemy.attachObserver(scoreTimeKeeper);
 			gameObjects.add(enemy);
 			renderables.add(enemy);
+			enemies.add(enemy);
 		}
 	}
 
@@ -178,6 +185,18 @@ public class GameEngine {
 		this.right = true;
 	}
 
+	public void savePressed(){
+		this.scoreTimeState = scoreTimeKeeper.save();
+		this.enemyState = enemiesMemento();
+	}
+
+	public void undoPressed(){
+		scoreTimeState.undo();
+		for(Memento memento:enemyState){
+			memento.undo();
+		}
+	}
+
 	public boolean shootPressed(){
 		if(timer>45 && player.isAlive()){
 			Projectile projectile = player.shoot();
@@ -210,12 +229,21 @@ public class GameEngine {
 	public Player getPlayer() {
 		return player;
 	}
+
 	public void toBeAttached(Subject subject){
-		subject.attachObserver(scoreObserver);
+		subject.attachObserver(scoreTimeKeeper);
 	}
-	public void setWindow(GameWindow window){
-		this.window = window;
-		scoreObserver.setupGame(window);
+
+	public ScoreTimeKeeper getScoreKeeper(){
+		return scoreTimeKeeper;
+	}
+
+	public List<Memento> enemiesMemento(){
+		List<Memento> mementoList = new ArrayList<>();
+		for(Enemy enemy:enemies){
+			mementoList.add(enemy.save());
+		}
+		return mementoList;
 	}
 
 }
