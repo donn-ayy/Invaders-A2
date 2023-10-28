@@ -49,41 +49,42 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
     }
 
     @Override
-    public void start() {}
+    public void start() {
+    }
 
     @Override
     public void update(GameEngine engine) {
-        if(enemyProjectile.size()<3){
-            if(this.isAlive() &&  random.nextInt(120)==20){
-                Projectile p = projectileFactory.createProjectile(new Vector2D(position.getX() + this.image.getWidth() / 2, position.getY() + image.getHeight() + 2),projectileStrategy, projectileImage);
+        if (enemyProjectile.size() < 3) {
+            if (this.isAlive() && random.nextInt(120) == 20) {
+                Projectile p = projectileFactory.createProjectile(new Vector2D(position.getX() + this.image.getWidth() / 2, position.getY() + image.getHeight() + 2), projectileStrategy, projectileImage);
                 enemyProjectile.add(p);
                 engine.toBeAttached((Subject) p);
                 engine.getPendingToAddGameObject().add(p);
                 engine.getPendingToAddRenderable().add(p);
             }
-        }else{
+        } else {
             pendingToDeleteEnemyProjectile.clear();
-            for(Projectile p : enemyProjectile){
-                if(!p.isAlive()){
+            for (Projectile p : enemyProjectile) {
+                if (!p.isAlive()) {
                     engine.getPendingToRemoveGameObject().add(p);
                     engine.getPendingToRemoveRenderable().add(p);
                     pendingToDeleteEnemyProjectile.add(p);
                 }
             }
 
-            for(Projectile p: pendingToDeleteEnemyProjectile){
+            for (Projectile p : pendingToDeleteEnemyProjectile) {
                 enemyProjectile.remove(p);
             }
         }
 
-        if(this.position.getX()<=this.image.getWidth() || this.position.getX()>=(engine.getGameWidth()-this.image.getWidth()-1)){
-            this.position.setY(this.position.getY()+25);
-            xVel*=-1;
+        if (this.position.getX() <= this.image.getWidth() || this.position.getX() >= (engine.getGameWidth() - this.image.getWidth() - 1)) {
+            this.position.setY(this.position.getY() + 25);
+            xVel *= -1;
         }
 
         this.position.setX(this.position.getX() + xVel);
 
-        if((this.position.getY()+this.image.getHeight())>=engine.getPlayer().getPosition().getY()){
+        if ((this.position.getY() + this.image.getHeight()) >= engine.getPlayer().getPosition().getY()) {
             engine.getPlayer().takeDamage(Integer.MAX_VALUE);
         }
 
@@ -101,7 +102,7 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
 
     @Override
     public double getHeight() {
-       return this.image.getHeight();
+        return this.image.getHeight();
     }
 
     @Override
@@ -133,7 +134,7 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
     @Override
     public void takeDamage(double amount) {
         notifyObservers();
-        this.lives-=1;
+        this.lives -= 1;
     }
 
     @Override
@@ -148,7 +149,7 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
 
     @Override
     public boolean isAlive() {
-        return this.lives>0;
+        return this.lives > 0;
     }
 
     public void setProjectileStrategy(ProjectileStrategy projectileStrategy) {
@@ -162,18 +163,18 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
 
     @Override
     public void notifyObservers() {
-        for(Observer observer:observers) {
-            if (projectileStrategy.getProjectileStrategyName().equals("FastProjectileStrategy")){
+        for (Observer observer : observers) {
+            if (projectileStrategy.getProjectileStrategyName().equals("FastProjectileStrategy")) {
                 observer.notify(Points.FAST_ALIEN.getPoints());
-            } else if (projectileStrategy.getProjectileStrategyName().equals("SlowProjectileStrategy")){
+            } else if (projectileStrategy.getProjectileStrategyName().equals("SlowProjectileStrategy")) {
                 observer.notify(Points.SLOW_ALIEN.getPoints());
-            } else{
+            } else {
                 observer.notify(Points.DEFAULT.getPoints());
             }
         }
     }
 
-    public void setProjectiles(ArrayList<Projectile> projectiles){
+    public void setProjectiles(ArrayList<Projectile> projectiles) {
         this.enemyProjectile = projectiles;
     }
 
@@ -185,4 +186,5 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
                 new ArrayList<>(enemyProjectile)
         );
     }
+}
 

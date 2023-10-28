@@ -16,7 +16,7 @@ public class EnemyMemento implements Memento {
     ArrayList<Projectile> projectiles;
     int xVel;
 
-    public EnemyMemento(Enemy enemy, Vector2D position, ArrayList<Projectile> projectiles,
+    public EnemyMemento(Enemy enemy, Vector2D position, ArrayList<Projectile> projectiles
 
         ){
         this.enemy = enemy;
