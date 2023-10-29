@@ -6,23 +6,15 @@ import invaders.factory.EnemyProjectile;
 import invaders.factory.EnemyProjectileFactory;
 import invaders.factory.Projectile;
 import invaders.factory.ProjectileFactory;
-import invaders.physics.Collider;
 import invaders.physics.Vector2D;
 import invaders.rendering.Renderable;
 import invaders.status.Observer;
 import invaders.status.Subject;
-import invaders.strategy.FastProjectileStrategy;
 import invaders.strategy.ProjectileStrategy;
-import invaders.strategy.SlowProjectileStrategy;
-import invaders.undo.EnemyMemento;
-import invaders.undo.Memento;
-import invaders.undo.Originator;
 import javafx.scene.image.Image;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -188,8 +180,8 @@ public class Enemy implements GameObject, Renderable, Subject {
         }
     }
 
-    public void setProjectiles(ArrayList<Projectile> projectiles) {
-        this.enemyProjectile = projectiles;
+    public ProjectileStrategy getProjectileStrategy() {
+        return projectileStrategy;
     }
 
     public Enemy deepCopy() {

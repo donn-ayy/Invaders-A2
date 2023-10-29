@@ -5,12 +5,8 @@ import java.util.ArrayList;
 
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
-import invaders.gameobject.Enemy;
-import invaders.gameobject.GameObject;
 import invaders.status.ScoreTimeKeeper;
-import invaders.undo.GameEngineMemento;
 import invaders.undo.Memento;
-import invaders.undo.ScoreTimeMemento;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -44,8 +40,7 @@ public class GameWindow {
     private int bottomBoxSize;
     private int playerScore;
     private ScoreTimeKeeper keeper;
-    private boolean flag = true;
-    Memento state;
+    private Label shortcutKeys;
 
 
     // private static final double VIEWPORT_MARGIN = 280.0;
@@ -77,7 +72,7 @@ public class GameWindow {
 
         scene = new Scene(vbox, width, height + bottomBoxSize);
 
-        KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model, this);
+        KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model);
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
@@ -88,6 +83,10 @@ public class GameWindow {
         bottomBox.getChildren().add(timerLabel);
 
         playerLabel = new Label("PLAYER SCORE: 0");
+        playerLabel.setFont(new Font("Arial", 20));
+        playerLabel.setTextFill(Color.LIMEGREEN);
+
+        shortcutKeys = new Label("s:save | u:undo | ");
         playerLabel.setFont(new Font("Arial", 20));
         playerLabel.setTextFill(Color.LIMEGREEN);
 
@@ -170,18 +169,6 @@ public class GameWindow {
 
 	public Scene getScene() {
         return scene;
-    }
-
-    public void saved(){
-        state = model.save();
-        flag = true;
-    }
-
-    public void undo(){
-        if(flag && state != null){
-            state.undo();
-            flag = false;
-        }
     }
 
 }

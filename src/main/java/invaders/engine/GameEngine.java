@@ -3,6 +3,7 @@ package invaders.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import invaders.Command.Command;
 import invaders.ConfigReader;
 import invaders.builder.BunkerBuilder;
 import invaders.builder.Director;
@@ -17,7 +18,8 @@ import invaders.entities.Player;
 import invaders.rendering.Renderable;
 import invaders.status.ScoreTimeKeeper;
 import invaders.status.Subject;
-import invaders.undo.GameEngineMemento;
+import invaders.undo.MementoManager;
+import invaders.undo.EnemyMemento;
 import invaders.undo.Memento;
 import invaders.undo.Originator;
 import org.json.simple.JSONObject;
@@ -43,13 +45,15 @@ public class GameEngine implements Originator {
 	private int gameWidth;
 	private int gameHeight;
 	private ScoreTimeKeeper scoreTimeKeeper;
-	private Memento scoreTimeState;
-	private boolean flag = true;
+	private MementoManager mementoManager;
+
 
 	private int timer = 45;
 
 	public GameEngine(String config){
 		scoreTimeKeeper = new ScoreTimeKeeper();
+		mementoManager = new MementoManager(this, scoreTimeKeeper);
+
 		enemies = new ArrayList<>();
 
 		// Read the config here
@@ -187,15 +191,11 @@ public class GameEngine implements Originator {
 	}
 
 	public void savePressed(){
-		this.scoreTimeState = scoreTimeKeeper.save();
-		flag = true;
+		mementoManager.saved();
 	}
 
 	public void undoPressed(){
-		if(flag && scoreTimeState != null){
-			scoreTimeState.undo();
-			flag = false;
-		}
+		mementoManager.undo();
 	}
 
 	public boolean shootPressed(){
@@ -241,7 +241,7 @@ public class GameEngine implements Originator {
 
 	@Override
 	public Memento save() {
-		return new GameEngineMemento(
+		return new EnemyMemento(
 				this,
 				copyEnemies()
 		);
@@ -274,5 +274,9 @@ public class GameEngine implements Originator {
 		}
 		gameObjects.addAll(enemies);
 		renderables.addAll(enemies);
+	}
+
+	public List<Enemy> getEnemies(){
+		return enemies;
 	}
 }

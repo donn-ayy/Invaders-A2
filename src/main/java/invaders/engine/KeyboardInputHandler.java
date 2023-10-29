@@ -22,9 +22,8 @@ class KeyboardInputHandler {
     private Map<String, MediaPlayer> sounds = new HashMap<>();
     private GameWindow window;
 
-    KeyboardInputHandler(GameEngine model, GameWindow window) {
+    KeyboardInputHandler(GameEngine model) {
         this.model = model;
-        this.window = window;
 
         // TODO (longGoneUser): Is there a better place for this code?
         URL mediaUrl = getClass().getResource("/shoot.wav");
@@ -73,12 +72,10 @@ class KeyboardInputHandler {
         }
 
         if(save){
-            window.saved();
             model.savePressed();
         }
 
         if(undo){
-            window.undo();
             model.undoPressed();
         }
     }
