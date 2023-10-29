@@ -17,14 +17,15 @@ import invaders.entities.Player;
 import invaders.rendering.Renderable;
 import invaders.status.ScoreTimeKeeper;
 import invaders.status.Subject;
+import invaders.undo.GameEngineMemento;
 import invaders.undo.Memento;
-import invaders.undo.ScoreTimeMemento;
+import invaders.undo.Originator;
 import org.json.simple.JSONObject;
 
 /**
  * This class manages the main loop and logic of the game
  */
-public class GameEngine {
+public class GameEngine implements Originator {
 	private List<GameObject> gameObjects = new ArrayList<>(); // A list of game objects that gets updated each frame
 	private List<GameObject> pendingToAddGameObject = new ArrayList<>();
 	private List<GameObject> pendingToRemoveGameObject = new ArrayList<>();
@@ -43,7 +44,7 @@ public class GameEngine {
 	private int gameHeight;
 	private ScoreTimeKeeper scoreTimeKeeper;
 	private Memento scoreTimeState;
-	private List<Memento> enemyState;
+	private boolean flag = true;
 
 	private int timer = 45;
 
@@ -187,13 +188,13 @@ public class GameEngine {
 
 	public void savePressed(){
 		this.scoreTimeState = scoreTimeKeeper.save();
-		this.enemyState = enemiesMemento();
+		flag = true;
 	}
 
 	public void undoPressed(){
-		scoreTimeState.undo();
-		for(Memento memento:enemyState){
-			memento.undo();
+		if(flag && scoreTimeState != null){
+			scoreTimeState.undo();
+			flag = false;
 		}
 	}
 
@@ -238,12 +239,40 @@ public class GameEngine {
 		return scoreTimeKeeper;
 	}
 
-	public List<Memento> enemiesMemento(){
-		List<Memento> mementoList = new ArrayList<>();
-		for(Enemy enemy:enemies){
-			mementoList.add(enemy.save());
-		}
-		return mementoList;
+	@Override
+	public Memento save() {
+		return new GameEngineMemento(
+				this,
+				copyEnemies()
+		);
 	}
 
+	public List<Enemy> copyEnemies(){
+		List<Enemy> copiedList = new ArrayList<>();
+		for(Enemy e:enemies){
+			copiedList.add(e.deepCopy());
+		}
+		return copiedList;
+	}
+
+	public void setEnemies(List<Enemy> enemies){
+		for(GameObject g:gameObjects){
+			if(g instanceof Enemy){
+				((Enemy)g).setLives(0);
+			}
+			if(g instanceof EnemyProjectile){
+				((EnemyProjectile)g).takeDamage(1);
+			}
+		}
+		for(Renderable ren:renderables){
+			if(ren instanceof Enemy){
+				((Enemy)ren).setLives(0);
+			}
+			if(ren instanceof EnemyProjectile){
+				ren.takeDamage(1);
+			}
+		}
+		gameObjects.addAll(enemies);
+		renderables.addAll(enemies);
+	}
 }

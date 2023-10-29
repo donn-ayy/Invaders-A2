@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Enemy implements GameObject, Renderable, Subject, Originator {
+public class Enemy implements GameObject, Renderable, Subject {
     private Vector2D position;
     private int lives = 1;
     private Image image;
@@ -46,6 +46,20 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
         this.enemyProjectile = new ArrayList<>();
         this.pendingToDeleteEnemyProjectile = new ArrayList<>();
         this.observers = new ArrayList<>();
+    }
+
+    public Enemy(Vector2D position, Image image, ProjectileFactory projectileFactory, List<Projectile> enemyProjectile,
+                 List<Projectile> pending, List<Observer> observers, ProjectileStrategy strategy, Image projectileImage, int xVel
+        ){
+        this.position = position;
+        this.image = image;
+        this.projectileFactory = projectileFactory;
+        this.enemyProjectile = (ArrayList<Projectile>) enemyProjectile;
+        this.pendingToDeleteEnemyProjectile = (ArrayList<Projectile>) pending;
+        this.observers = (ArrayList<Observer>) observers;
+        this.projectileStrategy = strategy;
+        this.projectileImage = projectileImage;
+        this.xVel = xVel;
     }
 
     @Override
@@ -178,12 +192,33 @@ public class Enemy implements GameObject, Renderable, Subject, Originator {
         this.enemyProjectile = projectiles;
     }
 
-    @Override
-    public Memento save() {
-        return new EnemyMemento(
-                this,
-                new Vector2D(position.getX(), position.getY()),
-                new ArrayList<>(enemyProjectile)
+    public Enemy deepCopy() {
+        Vector2D positionCopy = new Vector2D(position.getX(), position.getY());
+
+        ArrayList<Projectile> enemyProjectileCopy = new ArrayList<>();
+        for (Projectile p : enemyProjectile) {
+            enemyProjectileCopy.add(((EnemyProjectile)p).deepCopy());
+        }
+
+        ArrayList<Projectile> pendingToDeleteCopy = new ArrayList<>();
+        for (Projectile p : pendingToDeleteEnemyProjectile) {
+            pendingToDeleteCopy.add(((EnemyProjectile)p).deepCopy());
+        }
+
+        ArrayList<Observer> observersCopy = new ArrayList<>(observers);
+
+        ProjectileStrategy strategyCopy = projectileStrategy;
+
+        return new Enemy(
+                positionCopy,
+                this.image,
+                this.projectileFactory,
+                enemyProjectileCopy,
+                pendingToDeleteCopy,
+                observersCopy,
+                strategyCopy,
+                this.projectileImage,
+                this.xVel
         );
     }
 }

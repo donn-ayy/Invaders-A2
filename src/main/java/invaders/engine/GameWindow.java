@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
 import invaders.gameobject.Enemy;
+import invaders.gameobject.GameObject;
 import invaders.status.ScoreTimeKeeper;
+import invaders.undo.GameEngineMemento;
 import invaders.undo.Memento;
 import invaders.undo.ScoreTimeMemento;
 import javafx.geometry.Insets;
@@ -42,6 +44,8 @@ public class GameWindow {
     private int bottomBoxSize;
     private int playerScore;
     private ScoreTimeKeeper keeper;
+    private boolean flag = true;
+    Memento state;
 
 
     // private static final double VIEWPORT_MARGIN = 280.0;
@@ -73,7 +77,7 @@ public class GameWindow {
 
         scene = new Scene(vbox, width, height + bottomBoxSize);
 
-        KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model);
+        KeyboardInputHandler keyboardInputHandler = new KeyboardInputHandler(this.model, this);
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
@@ -148,6 +152,7 @@ public class GameWindow {
         }
 
 
+
         model.getGameObjects().removeAll(model.getPendingToRemoveGameObject());
         model.getGameObjects().addAll(model.getPendingToAddGameObject());
         model.getRenderables().removeAll(model.getPendingToRemoveRenderable());
@@ -159,10 +164,24 @@ public class GameWindow {
         model.getPendingToRemoveRenderable().clear();
 
         entityViews.removeIf(EntityView::isMarkedForDelete);
+
+
     }
 
 	public Scene getScene() {
         return scene;
+    }
+
+    public void saved(){
+        state = model.save();
+        flag = true;
+    }
+
+    public void undo(){
+        if(flag && state != null){
+            state.undo();
+            flag = false;
+        }
     }
 
 }

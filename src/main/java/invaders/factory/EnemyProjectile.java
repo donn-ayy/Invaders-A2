@@ -56,4 +56,15 @@ public class EnemyProjectile extends Projectile implements Subject {
             }
         }
     }
+
+    public EnemyProjectile deepCopy() {
+        Vector2D positionCopy = new Vector2D(this.getPosition().getX(), this.getPosition().getY());
+        ProjectileStrategy strategyCopy = this.strategy;
+        Image imageCopy = this.getImage();
+        EnemyProjectile copy = new EnemyProjectile(positionCopy, strategyCopy, imageCopy);
+        for (Observer observer : this.observers) {
+            copy.attachObserver(observer);
+        }
+        return copy;
+    }
 }
