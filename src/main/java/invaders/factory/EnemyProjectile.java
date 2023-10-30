@@ -67,4 +67,8 @@ public class EnemyProjectile extends Projectile implements Subject {
         }
         return copy;
     }
+
+    public String getProjectileStrategyName() {
+        return strategy.getProjectileStrategyName();
+    }
 }

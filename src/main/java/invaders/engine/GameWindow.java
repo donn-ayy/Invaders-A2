@@ -3,12 +3,17 @@ package invaders.engine;
 import java.util.List;
 import java.util.ArrayList;
 
+import invaders.Command.RemoveFastAlien;
+import invaders.Command.RemoveFastProjectile;
+import invaders.Command.RemoveSlowAlien;
+import invaders.Command.RemoveSlowProjectile;
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
 import invaders.status.ScoreTimeKeeper;
 import invaders.undo.Memento;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -45,14 +50,13 @@ public class GameWindow {
 
     // private static final double VIEWPORT_MARGIN = 280.0;
 
-	public GameWindow(GameEngine model) {
+    public GameWindow(GameEngine model) {
         this.model = model;
-        this.width =  model.getGameWidth();
+        this.width = model.getGameWidth();
         this.height = model.getGameHeight();
         this.keeper = model.getScoreKeeper();
 
-
-        bottomBoxSize = 50;
+        bottomBoxSize = 100;
         playerScore = 0;
 
         pane = new Pane();
@@ -66,9 +70,14 @@ public class GameWindow {
         vbox.setStyle("-fx-background-color: black");
         vbox.getChildren().add(pane);
 
+
         HBox bottomBox = new HBox();
-        bottomBox.setPrefHeight(bottomBoxSize);
-        vbox.getChildren().add(bottomBox);
+        bottomBox.setPrefHeight(bottomBoxSize / 2);
+
+
+        HBox shortcutKeysBox = new HBox();
+        shortcutKeysBox.setPrefHeight(bottomBoxSize / 2);
+        vbox.getChildren().addAll(bottomBox, shortcutKeysBox);
 
         scene = new Scene(vbox, width, height + bottomBoxSize);
 
@@ -76,28 +85,34 @@ public class GameWindow {
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
+        keyboardInputHandler.setCommand(KeyCode.V, new RemoveSlowProjectile(model));
+        keyboardInputHandler.setCommand(KeyCode.B, new RemoveFastProjectile(model));
+        keyboardInputHandler.setCommand(KeyCode.N, new RemoveSlowAlien(model));
+        keyboardInputHandler.setCommand(KeyCode.M, new RemoveFastAlien(model));
 
         timerLabel = new Label("TIME: 00:00");
         timerLabel.setFont(new Font("Arial", 20));
         timerLabel.setTextFill(Color.LIMEGREEN);
-        bottomBox.getChildren().add(timerLabel);
 
         playerLabel = new Label("PLAYER SCORE: 0");
         playerLabel.setFont(new Font("Arial", 20));
         playerLabel.setTextFill(Color.LIMEGREEN);
 
-        shortcutKeys = new Label("s:save | u:undo | ");
-        playerLabel.setFont(new Font("Arial", 20));
-        playerLabel.setTextFill(Color.LIMEGREEN);
-
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        bottomBox.getChildren().add(spacer);
-        bottomBox.getChildren().add(playerLabel);
 
-        bottomBox.setSpacing(10);
+        bottomBox.getChildren().addAll(timerLabel, spacer, playerLabel);
+
+        shortcutKeys = new Label("--- Short Cuts ---\ns:save | u:undo | v: -slow projectile | b: -fast projectile | n: -slow alien | m: -fast alien");
+        shortcutKeys.setFont(new Font("Arial", 12));
+        shortcutKeys.setTextFill(Color.LIMEGREEN);
+
+        shortcutKeysBox.getChildren().add(shortcutKeys);
+
         bottomBox.setPadding(new Insets(10));
+        shortcutKeysBox.setPadding(new Insets(10));
     }
+
 
 	public void run() {
          Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> this.draw()));

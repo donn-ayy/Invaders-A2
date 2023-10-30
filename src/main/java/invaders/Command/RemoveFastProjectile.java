@@ -2,15 +2,16 @@ package invaders.Command;
 
 import invaders.engine.GameEngine;
 
-public class RemoveSlowProjectile implements Command{
+public class RemoveFastProjectile implements Command{
     private GameEngine model;
 
-    public RemoveSlowProjectile(GameEngine model) {
+    public RemoveFastProjectile(GameEngine model) {
         this.model = model;
     }
 
     @Override
     public void execute() {
-        model.removeSlowProjectile();
+        model.removeFastProjectile();
     }
+
 }

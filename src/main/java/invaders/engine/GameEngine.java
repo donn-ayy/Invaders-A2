@@ -113,10 +113,10 @@ public class GameEngine implements Originator {
 				}
 				else{
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
-						if(renderableA instanceof PlayerProjectile && renderableB instanceof EnemyProjectile){
+						if(renderableA.getRenderableObjectName().equals("PlayerProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile")){
 							((EnemyProjectile)renderableB).notifyObservers();
 						}
-						if(renderableB instanceof PlayerProjectile && renderableA instanceof EnemyProjectile){
+						if(renderableB.getRenderableObjectName().equals("PlayerProjectile") && renderableA.getRenderableObjectName().equals("EnemyProjectile")){
 							((EnemyProjectile)renderableA).notifyObservers();
 						}
 						renderableA.takeDamage(1);
@@ -255,28 +255,84 @@ public class GameEngine implements Originator {
 		return copiedList;
 	}
 
-	public void setEnemies(List<Enemy> enemies){
-		for(GameObject g:gameObjects){
-			if(g instanceof Enemy){
-				((Enemy)g).setLives(0);
+	public void setEnemies(List<Enemy> enemies) {
+		List<GameObject> toRemove = new ArrayList<>();
+
+		for (Renderable ren : renderables) {
+			if (ren.getRenderableObjectName().equals("Enemy")) {
+				toRemove.add((GameObject) ren);
+				((Enemy) ren).setLives(0);
 			}
-			if(g instanceof EnemyProjectile){
-				((EnemyProjectile)g).takeDamage(1);
-			}
-		}
-		for(Renderable ren:renderables){
-			if(ren instanceof Enemy){
-				((Enemy)ren).setLives(0);
-			}
-			if(ren instanceof EnemyProjectile){
+			if (ren.getRenderableObjectName().equals("EnemyProjectile")) {
+                toRemove.add((GameObject) ren);
 				ren.takeDamage(1);
 			}
 		}
+		pendingToRemoveGameObject.addAll(toRemove);
 		gameObjects.addAll(enemies);
 		renderables.addAll(enemies);
 	}
 
-	public List<Enemy> getEnemies(){
-		return enemies;
+	public void removeFastAlien(){
+		List<Enemy> toRemove = new ArrayList<>();
+		int total = 0;
+		for(Enemy e:enemies){
+			if(e.getProjectileStrategy().getProjectileStrategyName().equals("FastProjectileStrategy")){
+				e.setLives(0);
+				toRemove.add(e);
+				total += 4;
+			}
+		}
+		pendingToRemoveGameObject.removeAll(toRemove);
+		pendingToRemoveRenderable.removeAll(toRemove);
+		enemies.removeAll(toRemove);
+		scoreTimeKeeper.notify(total);
 	}
+
+	public void removeSlowAlien(){
+		List<Enemy> toRemove = new ArrayList<>();
+		int total = 0;
+		for(Enemy e:enemies){
+			if(e.getProjectileStrategy().getProjectileStrategyName().equals("SlowProjectileStrategy")){
+				e.setLives(0);
+				toRemove.add(e);
+				total += 3;
+			}
+		}
+		pendingToRemoveGameObject.removeAll(toRemove);
+		pendingToRemoveRenderable.removeAll(toRemove);
+		enemies.removeAll(toRemove);
+		scoreTimeKeeper.notify(total);
+	}
+
+	public void removeFastProjectile() {
+		List<Projectile> toRemove = new ArrayList<>();
+		int total = 0;
+		for (Renderable ren : renderables) {
+			if (ren.getRenderableObjectName().equals("EnemyProjectile") && ((EnemyProjectile)ren).getProjectileStrategyName().equals("FastProjectileStrategy") && ren.isAlive()) {
+				ren.takeDamage(1);
+				toRemove.add((Projectile) ren);
+				total += 2;
+			}
+		}
+		pendingToRemoveGameObject.removeAll(toRemove);
+		pendingToRemoveRenderable.removeAll(toRemove);
+		scoreTimeKeeper.notify(total);
+	}
+
+	public void removeSlowProjectile() {
+		List<Projectile> toRemove = new ArrayList<>();
+		int total = 0;
+		for (Renderable ren : renderables) {
+			if (ren.getRenderableObjectName().equals("EnemyProjectile") && ((EnemyProjectile)ren).getProjectileStrategyName().equals("SlowProjectileStrategy") && ren.isAlive()) {
+				ren.takeDamage(1);
+				toRemove.add((Projectile) ren);
+				total += 1;
+			}
+		}
+		pendingToRemoveGameObject.removeAll(toRemove);
+		pendingToRemoveRenderable.removeAll(toRemove);
+		scoreTimeKeeper.notify(total);
+	}
+
 }

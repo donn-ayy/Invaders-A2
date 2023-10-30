@@ -1,5 +1,6 @@
 package invaders.engine;
 
+import invaders.Command.Command;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.media.Media;
@@ -18,12 +19,12 @@ class KeyboardInputHandler {
     private boolean save = false;
     private boolean undo = false;
     private Set<KeyCode> pressedKeys = new HashSet<>();
-
     private Map<String, MediaPlayer> sounds = new HashMap<>();
-    private GameWindow window;
+    private Map<KeyCode, Command> commandMap;
 
     KeyboardInputHandler(GameEngine model) {
         this.model = model;
+        commandMap = new HashMap<>();
 
         // TODO (longGoneUser): Is there a better place for this code?
         URL mediaUrl = getClass().getResource("/shoot.wav");
@@ -46,7 +47,14 @@ class KeyboardInputHandler {
                 shoot.stop();
                 shoot.play();
             }
+        } else{
+            Command command = commandMap.get(keyEvent.getCode());
+            if (command != null){
+                command.execute();
+            }
         }
+
+
 
         if (keyEvent.getCode().equals(KeyCode.LEFT)) {
             left = true;
@@ -97,5 +105,9 @@ class KeyboardInputHandler {
         if (keyEvent.getCode().equals(KeyCode.U)) {
             undo = false;
         }
+    }
+
+    public void setCommand(KeyCode key, Command command){
+        commandMap.put(key, command);
     }
 }
