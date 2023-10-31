@@ -12,6 +12,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Renders the initial window when starting application to get user's choice for game level difficulty.
+ * Built in 10-second timer. When timer runs out, game level will default to Easy.
+ */
 public class LevelWindow {
     private static final Integer COUNTDOWN_TIME = 10;
     private Timeline timeline;

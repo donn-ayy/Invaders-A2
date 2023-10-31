@@ -1,7 +1,9 @@
 package invaders.levels;
 
 import invaders.engine.GameEngine;
-
+/**
+ * Returns an instance of Hard level Game Engine based on Singleton Pattern.
+ */
 public class HardLevel implements GameLevel{
     private static GameEngine instance;
 

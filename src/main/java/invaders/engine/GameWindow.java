@@ -66,6 +66,7 @@ public class GameWindow {
 
         this.background = new SpaceBackground(model, pane);
 
+        // VBox used to create bottom of game window/renderable for player score, timer, and short-cut keys
         VBox vbox = new VBox();
         vbox.setStyle("-fx-background-color: black");
         vbox.getChildren().add(pane);
@@ -85,6 +86,8 @@ public class GameWindow {
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
+
+        // Command pattern used here to attached key event to action of command triggered.
         keyboardInputHandler.setCommand(KeyCode.V, new RemoveSlowProjectile(model));
         keyboardInputHandler.setCommand(KeyCode.B, new RemoveFastProjectile(model));
         keyboardInputHandler.setCommand(KeyCode.N, new RemoveSlowAlien(model));
@@ -103,7 +106,7 @@ public class GameWindow {
 
         bottomBox.getChildren().addAll(timerLabel, spacer, playerLabel);
 
-        shortcutKeys = new Label("--- Short Cuts ---\ns:save | u:undo | v: -slow projectile | b: -fast projectile | n: -slow alien | m: -fast alien");
+        shortcutKeys = new Label("--- Shortcuts/Cheats ---\ns:save | u:undo | v: -slow projectile | b: -fast projectile | n: -slow alien | m: -fast alien");
         shortcutKeys.setFont(new Font("Arial", 12));
         shortcutKeys.setTextFill(Color.LIMEGREEN);
 

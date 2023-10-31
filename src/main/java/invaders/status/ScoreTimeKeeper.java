@@ -7,6 +7,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
+/**
+ * ScoreTime-Keeper class observes subjects and is updated by Subjects through notify method based on Observer pattern.
+ */
 public class ScoreTimeKeeper implements Observer, Originator {
     int playerScore;
     int elapsedTimeInSeconds;

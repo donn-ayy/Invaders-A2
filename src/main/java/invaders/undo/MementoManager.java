@@ -3,6 +3,9 @@ package invaders.undo;
 import invaders.engine.GameEngine;
 import invaders.status.ScoreTimeKeeper;
 
+/**
+ * Manages all Memento for Undo/Save feature in one class to handle.
+ */
 public class MementoManager {
     Originator model;
     Originator keeper;

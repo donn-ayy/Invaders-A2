@@ -107,6 +107,11 @@ class KeyboardInputHandler {
         }
     }
 
+    /**
+     * Adds key and command to map for command pattern.
+     * @param key: Key input from end user
+     * @param command: Associated action for key entered by user.
+     */
     public void setCommand(KeyCode key, Command command){
         commandMap.put(key, command);
     }

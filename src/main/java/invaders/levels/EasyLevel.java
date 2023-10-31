@@ -2,6 +2,9 @@ package invaders.levels;
 
 import invaders.engine.GameEngine;
 
+/**
+ * Returns an instance of Easy level Game Engine based on Singleton Pattern.
+ */
 public class EasyLevel implements GameLevel{
     private static GameEngine instance;
 

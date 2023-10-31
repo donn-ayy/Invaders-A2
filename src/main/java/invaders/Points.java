@@ -1,5 +1,8 @@
 package invaders;
 
+/**
+ * Enum that tracks points earned during the game in one location.
+ */
 public enum Points {
     DEFAULT(1),
     SLOW_PROJECTILE(1),

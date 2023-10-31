@@ -22,6 +22,7 @@ public class App extends Application {
         // Returns an instance of GameEngine with JSON difficulty loaded
         GameEngine model = levelWindow.selectGameDifficulty();
 
+        // Original codebase implementation below
         primaryStage.setTitle("Space Invaders");
         GameWindow window = new GameWindow(model);
         window.run();

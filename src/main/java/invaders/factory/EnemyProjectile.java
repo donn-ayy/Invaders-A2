@@ -57,6 +57,10 @@ public class EnemyProjectile extends Projectile implements Subject {
         }
     }
 
+    /**
+     * Creates a deep copy of Enemy Projectile for memento pattern.
+     * @return Enemy Projectile object.
+     */
     public EnemyProjectile deepCopy() {
         Vector2D positionCopy = new Vector2D(this.getPosition().getX(), this.getPosition().getY());
         ProjectileStrategy strategyCopy = this.strategy;

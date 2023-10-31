@@ -5,6 +5,7 @@ import java.util.List;
 
 import invaders.Command.Command;
 import invaders.ConfigReader;
+import invaders.Points;
 import invaders.builder.BunkerBuilder;
 import invaders.builder.Director;
 import invaders.builder.EnemyBuilder;
@@ -112,6 +113,7 @@ public class GameEngine implements Originator {
 						(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))){
 				}
 				else{
+					// Copying same style of ensuring renderable is of "x" type.
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
 						if(renderableA.getRenderableObjectName().equals("PlayerProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile")){
 							((EnemyProjectile)renderableB).notifyObservers();
@@ -190,14 +192,6 @@ public class GameEngine implements Originator {
 		this.right = true;
 	}
 
-	public void savePressed(){
-		mementoManager.saved();
-	}
-
-	public void undoPressed(){
-		mementoManager.undo();
-	}
-
 	public boolean shootPressed(){
 		if(timer>45 && player.isAlive()){
 			Projectile projectile = player.shoot();
@@ -231,10 +225,36 @@ public class GameEngine implements Originator {
 		return player;
 	}
 
+	/* ========== Additional methods implemented in GameEngine for new features ========== */
+
+
+
+	/**
+	 * Saved Pressed calls on Memento Manager to execute saving states.
+	 */
+	public void savePressed(){
+		mementoManager.saved();
+	}
+
+	/**
+	 * Undo Pressed calls on Memento Manager to execute restoring to saved state IF not null and saved state exists.
+	 */
+	public void undoPressed(){
+		mementoManager.undo();
+	}
+
+	/**
+	 * Maintains reference of observer created in this class and attaches it to subjects when called.
+	 * @param subject: Subject to add existing single instance of ScoreTimeKeeper to.
+	 */
 	public void toBeAttached(Subject subject){
 		subject.attachObserver(scoreTimeKeeper);
 	}
 
+	/**
+	 * Returns instance of ScoreTimeKeeper.
+	 * @return ScoreTimeKeeper
+	 */
 	public ScoreTimeKeeper getScoreKeeper(){
 		return scoreTimeKeeper;
 	}
@@ -247,6 +267,10 @@ public class GameEngine implements Originator {
 		);
 	}
 
+	/**
+	 * Performs a deep copy of enemies.
+	 * @return List of Enemy
+	 */
 	public List<Enemy> copyEnemies(){
 		List<Enemy> copiedList = new ArrayList<>();
 		for(Enemy e:enemies){
@@ -255,6 +279,10 @@ public class GameEngine implements Originator {
 		return copiedList;
 	}
 
+	/**
+	 * Restores enemies and their positions on screen.
+	 * @param enemies: List of saved enemies to redrawn on the screen.
+	 */
 	public void setEnemies(List<Enemy> enemies) {
 		List<GameObject> toRemove = new ArrayList<>();
 
@@ -273,6 +301,9 @@ public class GameEngine implements Originator {
 		renderables.addAll(enemies);
 	}
 
+	/**
+	 * Removes instances of fast aliens and increments the player's score by 4 points for each fast alien.
+	 */
 	public void removeFastAlien(){
 		List<Enemy> toRemove = new ArrayList<>();
 		int total = 0;
@@ -280,7 +311,7 @@ public class GameEngine implements Originator {
 			if(e.getProjectileStrategy().getProjectileStrategyName().equals("FastProjectileStrategy")){
 				e.setLives(0);
 				toRemove.add(e);
-				total += 4;
+				total += Points.FAST_ALIEN.getPoints();
 			}
 		}
 		pendingToRemoveGameObject.removeAll(toRemove);
@@ -289,6 +320,9 @@ public class GameEngine implements Originator {
 		scoreTimeKeeper.notify(total);
 	}
 
+	/**
+	 * Removes instances of slow aliens and increments the player's score by 3 points for each slow alien.
+	 */
 	public void removeSlowAlien(){
 		List<Enemy> toRemove = new ArrayList<>();
 		int total = 0;
@@ -296,7 +330,7 @@ public class GameEngine implements Originator {
 			if(e.getProjectileStrategy().getProjectileStrategyName().equals("SlowProjectileStrategy")){
 				e.setLives(0);
 				toRemove.add(e);
-				total += 3;
+				total += Points.SLOW_ALIEN.getPoints();
 			}
 		}
 		pendingToRemoveGameObject.removeAll(toRemove);
@@ -305,6 +339,9 @@ public class GameEngine implements Originator {
 		scoreTimeKeeper.notify(total);
 	}
 
+	/**
+	 * Removes instances of fast projectiles and increments the player's score by 2 points for each fast projectile.
+	 */
 	public void removeFastProjectile() {
 		List<Projectile> toRemove = new ArrayList<>();
 		int total = 0;
@@ -312,7 +349,7 @@ public class GameEngine implements Originator {
 			if (ren.getRenderableObjectName().equals("EnemyProjectile") && ((EnemyProjectile)ren).getProjectileStrategyName().equals("FastProjectileStrategy") && ren.isAlive()) {
 				ren.takeDamage(1);
 				toRemove.add((Projectile) ren);
-				total += 2;
+				total += Points.FAST_PROJECTILE.getPoints();
 			}
 		}
 		pendingToRemoveGameObject.removeAll(toRemove);
@@ -320,6 +357,9 @@ public class GameEngine implements Originator {
 		scoreTimeKeeper.notify(total);
 	}
 
+	/**
+	 * Removes instances of slow projectiles and increments the player's score by 1 points for each slow projectile.
+	 */
 	public void removeSlowProjectile() {
 		List<Projectile> toRemove = new ArrayList<>();
 		int total = 0;
@@ -327,7 +367,7 @@ public class GameEngine implements Originator {
 			if (ren.getRenderableObjectName().equals("EnemyProjectile") && ((EnemyProjectile)ren).getProjectileStrategyName().equals("SlowProjectileStrategy") && ren.isAlive()) {
 				ren.takeDamage(1);
 				toRemove.add((Projectile) ren);
-				total += 1;
+				total += Points.SLOW_PROJECTILE.getPoints();
 			}
 		}
 		pendingToRemoveGameObject.removeAll(toRemove);
