@@ -287,17 +287,21 @@ public class GameEngine implements Originator {
 		for(GameObject g:gameObjects){
 			if(g instanceof Enemy){
 				((Enemy)g).setLives(0);
+
 			}
 			if(g instanceof EnemyProjectile){
 				((EnemyProjectile)g).takeDamage(1);
+
 			}
 		}
 		for(Renderable ren:renderables){
 			if(ren instanceof Enemy){
 				((Enemy)ren).setLives(0);
+
 			}
 			if(ren instanceof EnemyProjectile){
 				ren.takeDamage(1);
+
 			}
 		}
 		gameObjects.addAll(enemies);
