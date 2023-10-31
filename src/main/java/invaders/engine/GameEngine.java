@@ -283,20 +283,23 @@ public class GameEngine implements Originator {
 	 * Restores enemies and their positions on screen.
 	 * @param enemies: List of saved enemies to redrawn on the screen.
 	 */
-	public void setEnemies(List<Enemy> enemies) {
-		List<GameObject> toRemove = new ArrayList<>();
-
-		for (Renderable ren : renderables) {
-			if (ren.getRenderableObjectName().equals("Enemy")) {
-				toRemove.add((GameObject) ren);
-				((Enemy) ren).setLives(0);
+	public void setEnemies(List<Enemy> enemies){
+		for(GameObject g:gameObjects){
+			if(g instanceof Enemy){
+				((Enemy)g).setLives(0);
 			}
-			if (ren.getRenderableObjectName().equals("EnemyProjectile")) {
-                toRemove.add((GameObject) ren);
+			if(g instanceof EnemyProjectile){
+				((EnemyProjectile)g).takeDamage(1);
+			}
+		}
+		for(Renderable ren:renderables){
+			if(ren instanceof Enemy){
+				((Enemy)ren).setLives(0);
+			}
+			if(ren instanceof EnemyProjectile){
 				ren.takeDamage(1);
 			}
 		}
-		pendingToRemoveGameObject.addAll(toRemove);
 		gameObjects.addAll(enemies);
 		renderables.addAll(enemies);
 	}
